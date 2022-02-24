@@ -1,0 +1,246 @@
+<!-- StAuth10244: I Erik Martinez, 000835882 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else. -->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>bookWorm - Finding Libraries</title>
+    <link rel="stylesheet" href="css/book.css">
+  </head>
+  <body>
+    <header>
+      <h1>bookWorm</h1>
+      <h2>Finding libraries in the Hamilton Area</h2>
+    </header>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCX-FAz0cerOdh42c5dBuUzM440q5-38UE&callback=initMap"></script>
+    <script src="js/data.js"></script>
+
+    <!-- Creating container div, so I can apply layout styles to the inside divs -->
+    <div id="container-div">
+      <!-- This is the space where the user enters information -->
+      <div id="input-div">
+
+        <p id="instructions">Welcome to bookWorm! If you add your location, or specify your address down below, you can get directions to a library. After your location is marked, click on a library marker and then click the "Directions" button that appears. You can also filter the libraries you see on the map. Enjoy!</p>
+        <!-- HTML for the left area -->
+        <h2>Add a location to the map</h2>
+        <div id="text-div">
+
+          <div id="get-location-div">
+            <button id="myLocation" onclick="getLocation()">Add Your Location</button> 
+          </div>
+
+          <div id="receive-location-div">
+            <strong>Address:</strong>
+            <input id="addressBar" type="text" size="25"><br>
+            <button id="addMarkerBtn" onclick="enterAddress()">Add location</button> <br>
+          </div>
+
+        </div>
+
+        <strong >Selected Location:</strong><br>
+        <span id="currentLoco"></span>
+
+      </div>
+
+      <!-- This is the space on the right of the page -->
+      <div id="map-div">
+        <!-- Where the google map is placed -->
+        <div id="google-map"></div>
+        <!-- This is the navigation styled bar below the map -->
+        <div id="bottom-bar">
+
+          <h2 id="bar-header">Libraries</h2>
+          <ul id="bar-list">
+            <li id="showAll">
+              <button onclick="showAll(false)">Show All</button>
+            </li>
+            <li id="filterStoney" class="inline-list">
+              <button onclick="filterMarker('Stoney Creek')">Stoney Creek</button>
+            </li>
+            <li id="filterHamilton" class="inline-list">
+              <button onclick="filterMarker('Hamilton')">Hamilton</button>
+            </li>
+            <li id="filterFlamborough" class="inline-list">
+              <button onclick="filterMarker('Flamborough')">Flamborough</button>
+            </li>
+            <li id="filterAncaster" class="inline-list">
+              <button onclick="filterMarker('Ancaster')">Ancaster</button>
+            </li>
+            <li id="filterGlanbrook" class="inline-list">
+              <button onclick="filterMarker('Glanbrook')">Glanbrook</button>
+            </li>
+            <li id="filterDundas" class="inline-list">
+              <button onclick="filterMarker('Dundas')">Dundas</button>
+            </li>
+          </ul>
+
+        </div>
+      </div>
+    </div>
+    <!-- HTML for the footer -->
+    <div id="footer"><b>Erik Martinez (000835882) |  Mohawk College 2022</b></div>
+
+    <script>
+      // Creating lists for markers
+      markerList = [];
+      userMarkers = [];
+      // Creating variables to store the most recent origin and destination 
+      var selectedMarker = "";
+      var current_location = "";
+
+      function initMap(){
+        map = new google.maps.Map(document.getElementById("google-map"), 
+          {
+              center: { lat: 43.3258496, lng: -79.839232 },
+              zoom: 10,
+          });
+        // Adding API objects
+        infowindow = new google.maps.InfoWindow();
+        geocoder = new google.maps.Geocoder(); 
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer();
+        showAll(true); 
+        
+        // My additional Google Maps API feature
+        const trafficLayer = new google.maps.TrafficLayer();
+        trafficLayer.setMap(map);
+      }
+      // For loopiing through users past markers and clearing them from the map
+      function clearUserMarkers(){
+        for (i = 0; i < userMarkers.length; i++){
+          userMarkers[i].setMap(null)
+        }
+      }
+      // Adding properties from the data to the markers and placing them on the map
+      function showAll(){
+          for (i = 0; i < data.length; i++)
+          {
+              new_marker = new google.maps.Marker({
+              position: {lat: parseFloat(data[i].properties.LATITUDE),
+                          lng: parseFloat(data[i].properties.LONGITUDE)},
+              title: data[i].properties.NAME
+              });
+              new_marker.setMap(map);
+              new_marker.NAME = data[i].properties.NAME;
+              new_marker.ADDRESS = data[i].properties.ADDRESS;
+              new_marker.BUILDING_SQ_FT = data[i].properties.BUILDING_SQ_FT;
+              new_marker.HOLDINGS = data[i].properties.HOLDINGS;
+              new_marker.COMMUNITY = data[i].properties.COMMUNITY;
+              new_marker.addListener("click", marker_clicked)
+              markerList.push(new_marker);
+          }
+      }
+      //Filtering the markers based on their location. Takes an argument for which locations for the libraries to display
+      function filterMarker(district){
+          for (i = 0; i < markerList.length; i++){
+              if (markerList[i].COMMUNITY == district)
+              markerList[i].setMap(map);
+              else
+              markerList[i].setMap(null);
+          }
+      }
+      // Receiving the users location and displaying on the map
+      function showUserLocation(position){
+        userMarker = new google.maps.Marker({
+            position: {lat: position.coords.latitude,
+                       lng: position.coords.longitude},
+            title: "Your Location",
+            icon: "http://maps.google.com/mapfiles/kml/shapes/man.png"
+            
+            });
+         var toAddress = {lat: position.coords.latitude,
+                          lng: position.coords.longitude};
+
+        geocoder.geocode({location: toAddress}, function(results, status){
+          if (status == 'OK'){
+            document.getElementById("currentLoco").innerHTML = results[0].formatted_address
+            current_location = results[0].formatted_address;
+          } else {
+            alert("Geocode was not successful for the following reason:" + status);
+          }
+        })
+        clearUserMarkers();
+        userMarkers.push(userMarker);
+        userMarker.setMap(map);
+      }
+      function getLocation() {
+          // if navigator.geolocation doesn't exist, the browser does not support 
+          // geolocaation... geolocation is an HTML5 feature so virtually all browers
+          // now support it
+          if (navigator.geolocation) {
+
+              // call getCurrentPosition, give it our success and error functions
+              navigator.geolocation.getCurrentPosition(showUserLocation, showError);
+
+          } else {
+              x.innerHTML = "Geolocation is not supported by this browser.";
+          }
+      }
+      // Geocoding for user placing a marker
+      function enterAddress(){
+        let address = document.getElementById("addressBar").value;
+        geocoder.geocode({'address': address}, function(results, status){
+          if (status == 'OK'){
+            document.getElementById('currentLoco').innerHTML = address;
+            current_location = address;
+            userMarker = new google.maps.Marker({
+              position: results[0].geometry.location,
+              icon: "http://maps.google.com/mapfiles/kml/shapes/man.png"
+            })
+            clearUserMarkers();
+            userMarkers.push(userMarker);
+            userMarker.setMap(map);
+          } else {
+            alert("Geocode was not successful for the following reason:" + status);
+          }
+        });
+      }
+      // Displaying the info window for markers
+      marker_clicked = function(){
+        infowindow.close();
+        infowindow.setContent("<p id='marker-info'>" + this.NAME + "<br>SQFT :" + this.BUILDING_SQ_FT + "<br>Holdings: " + this.HOLDINGS + "<br><button id='directions-btn' onclick='showDirections()'>Directions</button>" + "</p>")
+        selectedMarker = this.ADDRESS;
+        infowindow.open(map, this)
+      }
+      // Displaying the directions 
+      function showDirections(){
+        directionsRenderer.setMap(map);
+        request = 
+        {
+          origin:  current_location,
+          destination: selectedMarker,
+          travelMode: "DRIVING"
+        };
+
+        directionsService.route(request, function(result, status){
+          if (status == "OK")
+            {
+              directionsRenderer.setDirections(result)
+            }
+          else {
+            alert("Displaying directions was not successful: " + status)
+          }
+        });
+      }
+      // Error catching for when the user denies access to their location
+      let error_display = document.getElementById("errorCode");
+      function showError(error) {
+          
+          switch(error.code) {
+              case error.PERMISSION_DENIED:
+              error_display.innerHTML = "User denied the request for Geolocation."
+              break;
+              case error.POSITION_UNAVAILABLE:
+              error_display.innerHTML = "Location information is unavailable."
+              break;
+              case error.TIMEOUT:
+              error_display.innerHTML = "The request to get user location timed out."
+              break;
+              case error.UNKNOWN_ERROR:
+              error_display.innerHTML = "An unknown error occurred."
+              break;
+          }
+      }
+    </script>
+  </body>
+</html>
+

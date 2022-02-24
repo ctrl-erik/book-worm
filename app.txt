@@ -1,0 +1,1 @@
+My application is aimed at any fan of books in the Hamilton Area. My application  displays libraries in the Hamilton, provides directions and is able to filter libraries displayed by location. The addiontal features that I added include reverse geocoding and traffic indication on the map with color

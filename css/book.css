@@ -1,0 +1,133 @@
+/* StAuth10244: I Erik Martinez, 000835882 certify that this material is my original work. No other person's work has been used without due acknowledgement. I have not made my work available to anyone else. */
+
+
+/* General Webpage CSS */
+*{
+    margin: 0px;
+    padding: 0px;
+}
+body{
+    background-color:wheat;
+    font-family: Arial, Helvetica, sans-serif;
+}
+header{
+    color: white;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: royalblue;
+    border: solid 3px rgb(255, 217, 0);
+    padding: 20px;
+}
+#container-div{
+    display: grid;
+    width: 80%;
+    margin: auto;
+    grid-template-columns: 1fr 2fr;
+}
+h2{
+    color: rgb(255, 217, 0);
+    padding: 5px;
+}
+/* CSS for left bar */
+
+#input-div{
+    margin-top: 20px;
+    background-color: royalblue;
+    width: 100%;
+    height: 60%;
+    grid-column: 1;
+    border: 5px solid rgb(255, 217, 0);
+    text-align: center;
+} 
+#input-div button{
+    padding: 5px;
+    margin: 5px;
+}
+#instructions{
+    padding: 10px;
+    color: rgb(255, 217, 0);
+}
+
+/* CSS for geocoding area on left bar */
+
+#text-div{
+    text-align: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 90%;
+    margin: auto;
+    padding: 20px;
+}
+#get-location-div{
+    grid-column: 1;
+    padding-top: 10px;
+}
+#receive-location-div{
+    grid-column: 2;
+    padding-top: 10px;
+    border-left: solid 4px rgb(255, 217, 0);;
+}
+
+#text-div p, span, strong{
+    font-family: Arial, Helvetica, sans-serif;
+    color: rgb(255, 217, 0);
+    margin-top: 5px;
+}
+#errorCode{
+    color: royalblue;
+}
+#text-div input{
+    margin-top: 5px;
+}
+#addMarkerBtn{
+    margin-top: 5px;
+}
+
+/* CSS for Google Map and Bottom Bar*/
+
+#map-div{
+    grid-column: 2;
+    margin: 20px;
+    border: solid 5px royalblue;
+}
+#google-map{
+    width: 100%;
+    height: 500px;
+    background-color: skyblue;
+}
+#marker-info{
+    line-height: 1.5;
+}
+/* Bottom Bar */
+#bottom-bar{
+    padding-bottom: 5px;
+    
+    width: 100%;
+    background-color: royalblue;
+    text-align: center;
+}
+#bar-list{
+    list-style-type: none;
+}
+#bar-list button{
+    padding: 2px;
+    margin: 5px;
+}
+.inline-list{
+    display: inline;
+}
+
+/* ------ */
+
+#footer{
+    padding: 20px;
+    height: 20px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    background-color: royalblue;
+    border: 5px solid rgb(255, 217, 0);
+    color: rgb(255, 217, 0);
+}
